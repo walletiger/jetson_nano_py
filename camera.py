@@ -43,7 +43,7 @@ class JetCamera():
         while not self.b_exit:
             try:
                 ret, img = self.cap.read()
-                if img:
+                if ret:
                     if self.queue.qsize() < self.max_queue:
                         self.queue.put_nowait(img)
             except:
@@ -51,16 +51,17 @@ class JetCamera():
 
     def read(self):
         if not self.cap:
-            return None, None
+            return False, None
 
         try:
             img = self.queue.get(block=True, timeout=1)
-
+            if img is None:
+                return False, None 
             return True, img
         except:
             pass
 
-        return None, None
+        return False, None
 
     def close(self):
 
