@@ -6,10 +6,10 @@ import queue
 
 class JetCamera():
     def __init__(self, cap_w, cap_h, cap_fps):
-        #self.cap_orig_w, self_cap_orig_h = 3264, 2464 # 4/3 , 21 fps
-        #self.cap_orig_w, self_cap_orig_h = 1920, 1080 # 16/9 , 30 fps
-        self.cap_orig_w, self.cap_orig_h = 1280, 720  # 60/120 fps
-        self.cap_orig_fps = 60 
+        #self.cap_orig_w, self.cap_orig_h = 3264, 2464 # 4/3 , 21 fps
+        self.cap_orig_w, self.cap_orig_h = 1920, 1080 # 16/9 , 30 fps
+        #self.cap_orig_w, self.cap_orig_h = 1280, 720  # 60/120 fps
+        self.cap_orig_fps = 30
         self.cap_out_w = cap_w
         self.cap_out_h = cap_h 
         self.cap_out_fps = cap_fps
@@ -18,7 +18,7 @@ class JetCamera():
         self.max_queue = 3
         self.queue = queue.Queue(maxsize=self.max_queue)
         
-        self.cap_str = 'nvarguscamerasrc ! video/x-raw(memory:NVMM), width=%d, height=%d, format=(string)NV12, framerate=(fraction)%d/1 '\
+        self.cap_str = 'nvarguscamerasrc tnr-strength=1 tnr-mode=2 ! video/x-raw(memory:NVMM), width=%d, height=%d, format=(string)NV12, framerate=(fraction)%d/1 '\
                 '! nvvidconv ! video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx '\
                 '! videorate ! video/x-raw, framerate=(fraction)%d/1 '\
                 '! videoconvert !  video/x-raw, format=BGR !  appsink sync=false ' \
@@ -54,7 +54,7 @@ class JetCamera():
             return False, None
 
         try:
-            img = self.queue.get(block=True, timeout=1)
+            img = self.queue.get(block=True, timeout=5)
             if img is None:
                 return False, None 
             return True, img
